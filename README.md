@@ -56,5 +56,6 @@ NSIS を起動し、次のようにして作成したスクリプト (NSI ファ
 
 ## インストーラーのサンプル
 以下はディレクトリ `hikari-server\` を `%localappdata%\hikari-server\` にインストールする例です。
+Modern UI 2.0 を使用します。
 
 - [example.nsi](example.nsi)
