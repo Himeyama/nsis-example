@@ -1,22 +1,45 @@
-# 日本語UI
-LoadLanguageFile "${NSISDIR}\\Contrib\\Language files\\Japanese.nlf"
+!define MUI_ICON "hikari.ico"
+!define PRODUCT_NAME "Hikari Server"
+!define INSTALL_DIR "$LOCALAPPDATA\hikari-server" # インストール先
+!define PUBLISH_DIR "hikari-server"
+!define EXEC_FILE "hikari-server.exe"
+!define PRODUCT_PUBLISHER "Hikari"
+
+# Modern UI
+!include MUI2.nsh
+# nsDialogs
+!include nsDialogs.nsh
+# LogicLib
+!include LogicLib.nsh
 
 # アプリケーション名
-Name "Hikari Server"
+Name "${PRODUCT_NAME}"
+
+BrandingText "${PRODUCT_NAME} v${VERSION}"
 
 # 作成されるインストーラ
 OutFile "Install.exe"
 
 # インストールされるディレクトリ
-InstallDir "$LOCALAPPDATA\hikari-server"
+InstallDir "${INSTALL_DIR}"
+
+# アイコン
+Icon "${MUI_ICON}"
+UninstallIcon "${MUI_ICON}"
 
 # ページ
-Page directory
-Page instfiles
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE LICENSE.txt
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
 
-# アンインストーラ ページ
-UninstPage uninstConfirm
-UninstPage instfiles
+!insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
+
+!insertmacro MUI_LANGUAGE "Japanese"
 
 # デフォルト セクション
 Section
@@ -24,19 +47,25 @@ Section
     SetOutPath "$INSTDIR"
 
     # インストールされるファイル
-    File /r "hikari-server\*.*"
+    File /r "${PUBLISH_DIR}\\*.*"
+    File "hikari.ico"
 
     # アンインストーラを出力
     WriteUninstaller "$INSTDIR\\Uninstall.exe"
 
     # スタート メニューにショートカットを登録
-    CreateDirectory "$SMPROGRAMS\\Hikari Server"
+    CreateDirectory "$SMPROGRAMS\\${PRODUCT_NAME}"
     SetOutPath "$INSTDIR"
-    CreateShortcut "$SMPROGRAMS\\Hikari Server\\Hikari Server.lnk" "$INSTDIR\\hikari-server.exe" ""
+    CreateShortcut "$SMPROGRAMS\\${PRODUCT_NAME}\\${PRODUCT_NAME}.lnk" "$INSTDIR\\${EXEC_FILE}" "" "$INSTDIR\\${MUI_ICON}"
 
     # レジストリに登録
-    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\HikariServer" "DisplayName" "Hikari Server"
-    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\HikariServer" "UninstallString" '"$INSTDIR\\Uninstall.exe"'
+    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "DisplayName" "${PRODUCT_NAME}"
+    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "Publisher" "${PRODUCT_PUBLISHER}"
+    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "DisplayIcon" "$INSTDIR\${MUI_ICON}"
+    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "DisplayVersion" "${VERSION}"
+    WriteRegStr HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "InstallDate" "${DATE}"
+    WriteRegDWORD HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}" "EstimatedSize" "${SIZE}"
 SectionEnd
 
 # アンインストーラ
@@ -45,15 +74,15 @@ Section "Uninstall"
     Delete "$INSTDIR\\Uninstall.exe"
 
     # ファイルを削除
-    Delete "$INSTDIR\\hikari-server.exe"
+    Delete "$INSTDIR\\${EXEC_FILE}"
 
     # ディレクトリを削除
     RMDir /r "$INSTDIR"
 
     # スタート メニューから削除
-    Delete "$SMPROGRAMS\\Hikari Server\\Hikari Server.lnk"
-    RMDir "$SMPROGRAMS\\Hikari Server"
+    Delete "$SMPROGRAMS\\${PRODUCT_NAME}\\${PRODUCT_NAME}.lnk"
+    RMDir "$SMPROGRAMS\\${PRODUCT_NAME}"
 
     # レジストリ キーを削除
-    DeleteRegKey HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\HikariServer"
+    DeleteRegKey HKLM "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\${PRODUCT_NAME}"
 SectionEnd
